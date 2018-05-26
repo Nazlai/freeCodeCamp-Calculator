@@ -1,133 +1,82 @@
-const screen = document.getElementById("screen");
 const show = document.getElementById("show");
+const calculate = document.getElementById("screen");
+const btn = document.querySelectorAll(".btn");
 
-screen.textContent = 0;
 show.textContent = 0;
+calculate.textContent = 0;
 
-function displayZero(e){
-    // Sets screen display to button value if screen is currently zero
-    if (screen.textContent === "0"){
-        screen.textContent = e;
-    } else {
-    screen.textContent += e;
-    }
-};
-
-function numbers(e){
-    // Screen displays decimal numbers
-    // Button press displays corresponding number to screen
-    if (show.textContent.endsWith(".")){
-        show.textContent += e;
-    } else {
-        show.textContent = e;
-    }
-};
-
-function operator(e){
-    // Lets screen display decimal numbers
-    // Operators do not show on screen
-    if (show.textContent.endsWith(".")){
-        show.textContent += e;
-    }
-};
-
-function press(e){
-    // For number click events
-    displayZero(e);
-    numbers(e);
-};
-
-
-
-function pressOp(e){
-    // For operator click events
-    displayZero(e);
-    operator(e);
-};
-
-// Adds click event for every button that is a number
-let btn = document.querySelectorAll(".btn");
-let arr = [];
 for (let i = 0; i < btn.length; i++){
-     arr.push(btn[i].textContent);
-}
-for (let i = 0; i < arr.length; i++){
-    btn[i].addEventListener("click", function(e){
-        press(arr[i]);
+    btn[i].addEventListener("click", function(){
+        const number = btn[i].textContent;
+        const displayNumber = show.textContent;
+        const calculateNumber = calculate.textContent;
+        
+        // Replace zero or operator with numbers if screen currently is showing an operator or zero
+        if (
+            show.textContent === "+" ||
+            show.textContent === "-" ||
+            show.textContent === "*" ||
+            show.textContent === "/"
+    ){
+            show.textContent = number;
+            calculate.textContent = calculateNumber + number;
+        } else if(
+            show.textContent === "0" &&
+            calculate.textContent === "0"
+        ){
+            show.textContent = number;
+            calculate.textContent = number;
+        } else {
+            show.textContent = displayNumber + number;
+            calculate.textContent = calculateNumber + number;
+        }
+
+        if (show.textContent.endsWith(".")){
+            show.textContent = displayNumber + number;
+            calculate.textContent = calculateNumber + number;
+        }
     })
 }
 
-let times = document.getElementById("times");
-times.addEventListener("click", function(){
-    // Prevents consecutive multiple signs
-    if (!screen.textContent.endsWith("*")){
-        pressOp("*");
-    }
-});
-
-let add = document.getElementById("add");
-add.addEventListener("click", function(){
-    // Prevents consecutive addition signs
-    if (!screen.textContent.endsWith("+")){
-        pressOp("+");
-    }
-});
-
-let minus = document.getElementById("minus");
-minus.addEventListener("click", function(){
-    // Prevents consecutive subtraction signs
-    if (!screen.textContent.endsWith("-")){
-        pressOp("-");
-    }
-});
-
-let divide = document.getElementById("divide");
-divide.addEventListener("click", function(){
-    // Prevents consecutive division signs
-    if (!screen.textContent.endsWith("/")){
-        pressOp("/");
-    }
-});
-
-
-let point = document.getElementById("point");
+let decimal = document.getElementById("point");
 point.addEventListener("click", function(){
-    function press(e){      
-        // Decimal point shows on both screens
-        screen.textContent += e;
-        show.textContent += e;
-    }
-    // Prevents consecutive decimal point 
-    if (!screen.textContent.endsWith(".")){
-        press(".");
-    }
-    
-});
+  if (!calculate.textContent.endsWith(".")){
+    show.textContent += ".";
+    calculate.textContent += ".";
+  }
+})
 
-// Button on press removes last character on screen
-// If all characters are removed, sets screen value to zero
-let cut = document.getElementById("cut");
-cut.addEventListener("click", function(e){
-    let screenString = screen.textContent;
-    screen.textContent = screenString.substring(0, screenString.length - 1);
-    if(screen.textContent === ""){
-    screen.textContent = 0;
-    show.textContent = 0;
-    }
-});
+let operator = document.querySelectorAll(".operator");
+for (let i = 0; i < operator.length; i++){
+    operator[i].addEventListener("click", function(){
+        let selectedOperator = operator[i].textContent;
+        if (!show.textContent.endsWith(selectedOperator) && 
+            !calculate.textContent.endsWith(selectedOperator)){
+        show.textContent = selectedOperator;
+        calculate.textContent += selectedOperator;
+        }
+    })
+}
 
-// Button press calculates string value
-let equal = document.getElementById("equal");
-equal.addEventListener("click", function(){
-    let result = eval(screen.textContent);
-    screen.textContent = result;
-    show.textContent = result;
-});
-
-// Clears screen and sets screen value to zero
 let clear = document.getElementById("clear");
 clear.addEventListener("click", function(){
-    screen.textContent = 0;
-    show.textContent = 0;
-});
+    show.textContent = "0";
+    calculate.textContent = "0";
+})
 
+let cut = document.getElementById("cut");
+cut.addEventListener("click", function(){
+    let calculateString = calculate.textContent;
+    calculate.textContent = calculateString.substring(0, calculateString.length - 1);
+    if (calculate.textContent === ""){
+        show.textContent = 0;
+        calculate.textContent = 0;
+    }
+})
+
+let equal = document.getElementById("equal");
+equal.addEventListener("click", function(){
+    let result = eval(calculate.textContent);
+    show.textContent = result;
+    calculate.textContent = result;
+})
