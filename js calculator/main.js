@@ -10,13 +10,14 @@ for (let i = 0; i < btn.length; i++){
         const number = btn[i].textContent;
         const displayNumber = show.textContent;
         const calculateNumber = calculate.textContent;
-        
+        if (show.textContent.length < 15){
         // Replace zero or operator with numbers if screen currently is showing an operator or zero
         if (
             show.textContent === "+" ||
             show.textContent === "-" ||
             show.textContent === "*" ||
-            show.textContent === "/"
+            show.textContent === "/" ||
+            show.textContent === "Error"
     ){
             show.textContent = number;
             calculate.textContent = calculateNumber + number;
@@ -35,12 +36,14 @@ for (let i = 0; i < btn.length; i++){
             show.textContent = displayNumber + number;
             calculate.textContent = calculateNumber + number;
         }
+        }
     })
 }
 
 let decimal = document.getElementById("point");
 point.addEventListener("click", function(){
-  if (!calculate.textContent.endsWith(".")){
+  if (!calculate.textContent.endsWith(".") &&
+     !calculate.textContent.includes(".")){
     show.textContent += ".";
     calculate.textContent += ".";
   }
@@ -79,4 +82,8 @@ equal.addEventListener("click", function(){
     let result = eval(calculate.textContent);
     show.textContent = result;
     calculate.textContent = result;
+    if (show.textContent.length > 14) {
+      show.textContent = "Error";
+      calculate.textContent = "";
+    } 
 })
